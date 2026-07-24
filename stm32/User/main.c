@@ -8,6 +8,7 @@
 
 uint8_t RxSTA = 1;
 float Angle;			//定义角度变量
+uint8_t GestureMatched;
 
 int main(void)
 {
@@ -27,12 +28,14 @@ int main(void)
 		
 		if (Serial_RxFlag == 1)		//如果接收到数据包
 		{
+			GestureMatched = 0;
 			
 			OLED_ShowString(4, 1, Serial_RxPacket);				//OLED清除指定位置，并显示接收到的数据包
 			
 			/*将收到的数据包与预设的指令对比，以此决定将要执行的操作*/
 			if (strcmp(Serial_RxPacket, "Five") == 0)			//如果收到Five指令
 			{
+				GestureMatched = 1;
 				Serial_SendString("Five_OK\r\n");				//串口回传一个字符串Five_OK
 				OLED_ShowString(2, 1, "                ");
 				OLED_ShowString(2, 1, "Five_OK");				//OLED清除指定位置，并显示Five_OK
@@ -46,6 +49,7 @@ int main(void)
 			}
 			else if (strcmp(Serial_RxPacket, "Zero") == 0)	//如果收到Zero指令
 			{
+				GestureMatched = 1;
 									
 				Serial_SendString("Zero_OK\r\n");			//串口回传一个字符串Zero_OK
 				OLED_ShowString(2, 1, "                ");
@@ -61,6 +65,7 @@ int main(void)
 			
 			else if (strcmp(Serial_RxPacket, "Yeah") == 0)	//如果收到Yeah指令
 			{
+				GestureMatched = 1;
 								
 				Serial_SendString("Yeah_OK\r\n");			//串口回传一个字符串Yeah_OK
 				OLED_ShowString(2, 1, "                ");
@@ -76,6 +81,7 @@ int main(void)
 			
 			else if (strcmp(Serial_RxPacket, "Close") == 0)	//如果收到Close指令
 			{
+				GestureMatched = 1;
 
 				Serial_SendString("Close_OK\r\n");			//串口回传一个字符串Close_OK
 				OLED_ShowString(2, 1, "                ");
@@ -90,6 +96,7 @@ int main(void)
 					
 			else if (strcmp(Serial_RxPacket, "One") == 0)	//如果收到One指令
 			{
+				GestureMatched = 1;
 				Serial_SendString("One_OK\r\n");			//串口回传一个字符串One_OK
 				OLED_ShowString(2, 1, "                ");
 				OLED_ShowString(2, 1, "One_OK");			//OLED清除指定位置，并显示One_OK
@@ -106,6 +113,10 @@ int main(void)
 				Serial_SendString("ERROR_COMMAND\r\n");			//串口回传一个字符串ERROR_COMMAND
 				OLED_ShowString(2, 1, "                ");
 				OLED_ShowString(2, 1, "ERROR_COMMAND");			//OLED清除指定位置，并显示ERROR_COMMAND
+			}
+			if (GestureMatched == 1)
+			{
+				Servo_SetAngle(Angle);
 			}
 			
 			Serial_RxFlag = 0;			//处理完成后，需要将接收数据包标志位清零，否则将无法接收后续数据包
